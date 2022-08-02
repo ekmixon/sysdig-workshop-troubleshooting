@@ -23,7 +23,7 @@ logger = logging.getLogger(__name__)
 @Tracer(enter_args={"n": Args(0)}, exit_args={"ret": ReturnValue})
 def fib(n):
     a, b = 1, 1
-    for i in range(n-1):
+    for _ in range(n-1):
         a, b = b, a+b
     return a
 
@@ -64,9 +64,9 @@ class MyRequestHandler(BaseHTTPRequestHandler):
         with Tracer("download_handler") as t:
             with t.span("download_headers"):
                 self.do_headers()
-    
+
             with t.span("download_write"):
-                filename = '/tmp/blob.bin.{}'.format(random.randint(1,4))
+                filename = f'/tmp/blob.bin.{random.randint(1, 4)}'
                 self.do_download_write(filename)
 
     def do_GET(self):
@@ -89,15 +89,14 @@ class ThreadingSimpleServer(ThreadingMixIn, HTTPServer):
 
 
 def init_file(file_path, size, compress=False):
-    file_raw_path = file_path+'.raw'
+    file_raw_path = f'{file_path}.raw'
     with open(file_raw_path, "wb") as out:
        out.truncate(1024 * size)
     if compress:
-        f_in = open(file_raw_path)
-        f_out = gzip.open(file_path, 'wb')
-        f_out.writelines(f_in)
-        f_out.close()
-        f_in.close()
+        with open(file_raw_path) as f_in:
+            f_out = gzip.open(file_path, 'wb')
+            f_out.writelines(f_in)
+            f_out.close()
     else:
         os.rename(file_raw_path, file_path)
 

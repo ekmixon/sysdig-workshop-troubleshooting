@@ -12,10 +12,9 @@ def randomURL():
     available_endpoints = ['fib', 'empty', 'download']
     endpoint = random.choice(available_endpoints)
     number = random.randint(1, 1024)
-    url = 'http://{}/{}/{}'.format(host, endpoint, number)
-    return url
+    return f'http://{host}/{endpoint}/{number}'
 
 with open('urls.txt', 'a') as urls:
-    for i in range(count):
+    for _ in range(count):
         url = randomURL()
         urls.write(url+'\n')
